@@ -8,10 +8,12 @@ const driverRoutes = require('./routes/driverRoutes');
 const parcelRoutes = require('./routes/parcelRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const maintenanceRoutes = require('./routes/maintenanceRoutes');
+const authRoutes = require('./routes/authRoutes')
 
 app.use('/drivers', driverRoutes)
 app.use('/parcels', parcelRoutes)
 app.use('/maintenance', maintenanceRoutes)
+app.use('/auth', authRoutes)
 
 app.use(errorHandler)
 port = process.env.PORT || 3000;

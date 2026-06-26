@@ -47,9 +47,13 @@ const transferCargo = async(sender_driver_id, receiver_driver_id) => {
 
     try {
         await client.query('BEGIN');
-        
+        const updateIDtext = `UPDATE parcels SET driver_id = $1 WHERE driver_id = $2 AND status = 'Dispatched' RETURNING *;`
         const res = await client.query(updateIDtext, [receiver_driver_id, sender_driver_id]);
+
+        const updateSenderText = `UPDATE drivers SET status = 'Available' WHERE id = $1;`;
         await client.query(updateSenderText, [sender_driver_id]);
+
+        const updateReceiverText = `UPDATE drivers SET status = 'On Delivery' WHERE id = $1;`;
         await client.query(updateReceiverText, [receiver_driver_id]);
 
         await client.query('COMMIT');

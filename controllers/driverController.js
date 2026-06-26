@@ -52,7 +52,7 @@ const transferCargo = async (req, res, next) => {
         const result = await driverModel.transferCargo(sender_driver_id, receiver_driver_id)
         res.status(200).json(result)
     } catch(error){
-        next(err)
+        next(error)
     }
 }
 

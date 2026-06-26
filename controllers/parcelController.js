@@ -37,7 +37,7 @@ const logParcel = async(req, res, next) => {
         )
         res.status(201).json(logP)
     } catch(error){
-        next(err)
+        next(error)
     }
 }
 
