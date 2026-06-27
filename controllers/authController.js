@@ -14,7 +14,7 @@ const registerDispatcher = async(req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
         const register = await authModel.registerDispatcher(username, password_hash);
-        res.status(200).json(register)
+        res.status(201).json(register)
     } catch(error){
         if (error.code === '23505') {
             const err = new Error('Username is already taken');

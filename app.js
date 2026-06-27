@@ -16,7 +16,5 @@ app.use('/maintenance', maintenanceRoutes)
 app.use('/auth', authRoutes)
 
 app.use(errorHandler)
-port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Application is running on port ${port}`)
-})
+
+module.exports = app
