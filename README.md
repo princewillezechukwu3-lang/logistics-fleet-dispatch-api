@@ -1,125 +1,43 @@
-# Logistics Fleet & Dispatch Engine API
+# 🚚 Logistics Fleet & Dispatch Engine API
 
-A production-ready RESTful Backend API built with Node.js, Express, and PostgreSQL. This system manages an e-commerce or logistics warehouse dispatch infrastructure, handling relational table dependencies, strict database data integrity validations, automated tracking tokens, and atomic transactions.
+A production-ready RESTful Backend API built with Node.js, Express, and PostgreSQL. This system manages warehouse dispatch infrastructure, handling strict data validations, relational table dependencies, and automated cloud infrastructure deployments.
+
+Live Service Link: [https://logistics-fleet-dispatch-api.onrender.com](https://logistics-fleet-dispatch-api.onrender.com)
+
+---
 
 ## 🚀 Key Features & Architectural Layers
 
-- **Express MVC Architecture**: Clean separation of concerns across structural layout boundaries (`app.js` entry point, `routes/`, `controllers/`, and decoupled `models/` execution scripts).
-- **Relational Integrity Shield**: Robust table mapping linking `drivers` and `parcels` via PostgreSQL foreign key constraints with safe `ON DELETE SET NULL` cascade handling.
-- **Atomic Database Transactions**: Concurrency mitigation utilizing `BEGIN`, `COMMIT`, and `ROLLBACK` operational queries to guarantee safe cargo handoffs without state mismatch data corruption.
-- **Automated Alphanumeric Token Generation**: Cryptographically non-colliding tracking code generator using Node.js native `crypto` modules (`TRK-[YEAR]-[HEX]`) to safely isolate parameter parsing.
-- **Centralized Global Error Catching**: Unified Express async pipeline middleware utilizing four-parameter `(err, req, res, next)` interceptors for cleaner code structure.
-- **Zero-Trust Connection Security**: Environmentally aware multi-stage connection handlers utilizing ternary logic operators to toggle encrypted `SSL` handshakes automatically between `localhost` sandbox tests and external live web environments.
-
----
-
-## 📁 System Repository Structure
-
-```text
-logistics_engine/
-├── config/
-│   └── db.js                 # PostgreSQL Pool connection instance config
-├── controllers/
-│   ├── driverController.js   # Request parsing, validations, and endpoint route orchestration
-│   ├── maintenanceController.js
-│   └── parcelController.js
-├── middleware/
-│   └── errorHandler.js       # Centralized 4-argument global error catcher response gate
-├── models/
-│   ├── driverModel.js        # Pure data storage access queries and transaction scripts
-│   ├── maintenanceModel.js
-│   └── parcelModel.js
-├── routes/
-│   ├── driverRoutes.js       # Express Traffic Cop routing paths
-│   ├── maintenanceRoutes.js
-│   └── parcelRoutes.js
-├── .env                      # Hidden system environment constants (Git-shielded)
-├── .gitignore                # Production security exclusions
-├── app.js                    # Global application server bootstrapping file
-└── package.json
-
-```
-
----
-
-## 🛠️ Database Schema Blueprint
-
-```sql
--- 1. DRIVERS TABLE
-CREATE TABLE drivers (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    license_number VARCHAR(100) UNIQUE NOT NULL,
-    status VARCHAR(50) DEFAULT 'Available' CHECK (status IN ('Available', 'On Delivery', 'Suspended'))
-);
-
--- 2. PARCELS TABLE
-CREATE TABLE parcels (
-    id SERIAL PRIMARY KEY,
-    tracking_number VARCHAR(100) UNIQUE NOT NULL,
-    destination VARCHAR(255) NOT NULL,
-    weight_kg NUMERIC(6, 2) NOT NULL,
-    status VARCHAR(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Dispatched', 'Delivered')),
-    driver_id INT REFERENCES drivers(id) ON DELETE SET NULL
-);
-
--- 3. MAINTENANCE LOGS TABLE
-CREATE TABLE maintenance_logs (
-    id SERIAL PRIMARY KEY,
-    ticket_number VARCHAR(100) UNIQUE NOT NULL,
-    vehicle_type VARCHAR(100) NOT NULL,
-    scheduled_date DATE NOT NULL,
-    status VARCHAR(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Completed', 'Overdue')),
-    driver_id INT REFERENCES drivers(id) ON DELETE SET NULL
-);
-
-```
-
----
-
-## 🛰️ Core API Operational Endpoints
-
-### 🚚 Driver Logistics Management
-
-* **`POST /drivers`**: Onboards a new driver. Validates parameter inputs and handles unique license number conflicts gracefully.
-* **`GET /drivers/active-manifest`**: Runs advanced relational database queries utilizing a `LEFT JOIN` and an optimized inline SQL `array_agg() FILTER` aggregation framework to list active drivers alongside compiling their assigned parcel tracking manifests.
-
-### 📦 Parcel Shipping Infrastructure
-
-* **`POST /parcels`**: Registers an incoming shipment. Automatically fires internal crypto engines to generate tracking codes natively, ignoring user input injection vectors.
-* **`PUT /parcels/:id/dispatch`**: Assigns a vehicle package. Validates state constraints to block shipments if a package is already dispatched or if the target operator is flagged as suspended or away.
-
-### 🔄 Administrative Control Systems
-
-* **`PUT /drivers/transfer-cargo`**: Triggers a secure transaction. Shifts all active delivery tracking pointers from Driver A to Driver B atomically inside a rollback sandbox, safely returning both trucks to their accurate operational states.
-* **`POST /maintenance`**: Automatically logs and books scheduling intervals with date boundary validation layers.
+* **Relational Integrity Shield:** Robust table mapping linking `drivers`, `parcels`, and `maintenance_logs` via PostgreSQL foreign key constraints with safe `ON DELETE SET NULL` cascade handling.
+* **Automated Schema Versioning:** Programmatic, idempotent migration tracking using `node-pg-migrate`, completely removing manual database configuration drift across environments.
+* **Secure Session Architecture:** Stateless user session workflows utilizing `bcryptjs` for cryptographic password hashing and `jsonwebtoken` (JWT) authorization gates.
+* **Atomic Database Transactions:** Concurrency mitigation utilizing `BEGIN`, `COMMIT`, and `ROLLBACK` operational queries to guarantee safe cargo handoffs without state mismatch data corruption.
+* **Zero-Trust Connection Security:** Environmentally aware connection handlers utilizing ternary logic to toggle encrypted `SSL` handshakes automatically between local machine sandboxes and active live web environments.
 
 ---
 
 ## ⚙️ Local Development Quickstart
 
-### 1. Installation
-
-Clone your repository and run the installation script:
-
-```bash
-npm install
-
-```
-
-### 2. Configuration (`.env`)
-
-Create a local `.env` hidden parameter root file and populate it with your cloud connection strings:
-
+### 1. Installation & Environment Configuration
+Clone this repository, run `npm install`, and establish a local `.env` file in the project root:
 ```text
 PORT=3000
-DATABASE_URL=postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DATABASE_NAME>
-
+NODE_ENV=development
+LOCAL_DATABASE_URL=postgres://postgres:<PASSWORD>@localhost:5432/<LOCAL_DATABASE>
+DATABASE_URL=postgres://postgres:<PASSWORD>@localhost:5432/<LOCAL_DATABASE>
+JWT_SECRET=local_development_only_secret_key_12345
 ```
+### 2. Run Database Migrations & Boot Engine
+Programmatically sync your database layout to compile your tables locally before launching:
 
-### 3. Running Execution Engine
-
-```bash
-node app.js
-
+``` bash
+npm run migrate:up
+npm start
 ```
+## ☁️ Continuous Deployment Pipeline (Render Network)
+
+This application features an automated production pipeline tied directly to the codebase version control state.
+
+* **Build Hook Strategy:** On every code push, Render executes `npm install` followed instantly by the automated migration command `npm run migrate:up`.
+* **Database TLS Enforcement:** The migration runner executes using an explicit `PGSSLMODE=require` state to force a secure, encrypted socket layer handshake with the live database pool before booting the server logic.
+* **Dynamic Binding:** Upon migration verification, the application instantiates via `node server.js`, dynamically listening to assigned production environment ports.
