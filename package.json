@@ -8,7 +8,7 @@
     "dev": "nodemon server.js",
     "test": "jest --runInBand --detectOpenHandles",
     "migrate:create": "node-pg-migrate create",
-    "migrate:up": "node-pg-migrate up",
+    "migrate:up": "PGSSLMODE=require node-pg-migrate up",
     "migrate:down": "node-pg-migrate down"
   },
   "keywords": [],
